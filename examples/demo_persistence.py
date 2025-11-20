@@ -1,8 +1,15 @@
+```python
 import asyncio
-from sqlmodel import Session, select
+import time
+import sys
+import os
+from sqlmodel import Session, select # Kept Session, select as they are used later
 from workflow.models import WorkflowDefinition, NodeConfig
 from workflow.engine import WorkflowEngine
-from workflow.database import create_db_and_tables, engine, Workflow, WorkflowRun, get_session
+from workflow.database import create_db_and_tables, engine, Workflow, WorkflowRun, get_session # Kept original imports as they are used later
+
+# Add parent directory to path to find 'workflow' package
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 async def main():
     # 1. Initialize DB
