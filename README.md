@@ -100,6 +100,30 @@ Demonstrates parallel execution of HTTP nodes.
 python examples/demo_workflow.py
 ```
 
+**3. Smart Home Automation (Complex Logic)**
+A workflow that fetches data (Price, Weather, Schedule) in parallel, then uses an Agent to decide whether to turn on the Heater or AC.
+
+```mermaid
+flowchart LR
+    Start[Input Temp] --> GetPrice[Get Price]
+    Start --> GetWeather[Get Weather]
+    Start --> GetSchedule[Get Schedule]
+    
+    GetPrice --> Agent{Thermostat Agent}
+    GetWeather --> Agent
+    GetSchedule --> Agent
+    
+    Agent -- "Too Cold" --> Heater[Turn On Heater]
+    Agent -- "Too Hot" --> AC[Turn On AC]
+    
+    Heater --> End([End])
+    AC --> End
+```
+
+```bash
+python examples/smart_home_workflow.py
+```
+
 ### Running the API Server
 
 Start the FastAPI server:
