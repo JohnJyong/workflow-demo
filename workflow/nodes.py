@@ -59,6 +59,11 @@ class AgentNode(Node):
             # Fallback for demo without key: use mock logic or raise error
             # For now, we'll print a warning and fallback to mock logic for safety if no key provided
             print("WARNING: No API key provided for AgentNode. Falling back to mock logic.")
+            
+            # Check for explicit force_selection param (used in demos)
+            if "force_selection" in self.config.params:
+                return {"selected_node": self.config.params["force_selection"]}
+                
             user_input = context.data.get("user_input", "")
             if "B" in user_input or "b" in user_input:
                  if len(self.config.next_nodes) > 1:
@@ -89,7 +94,13 @@ class AgentNode(Node):
             "Return ONLY the ID of the selected node in JSON format like {\"id\": \"selected_id\"}."
         )
         
-        user_content = f"Context: {json.dumps(context.data)}\nInstruction: {prompt_template}"
+        # Combine initial data and results from previous nodes
+        full_context = {
+            "initial_data": context.data,
+            "previous_results": context.results
+        }
+        
+        user_content = f"Context: {json.dumps(full_context)}\nInstruction: {prompt_template}"
         
         messages = [
             {"role": "system", "content": system_prompt},
