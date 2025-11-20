@@ -11,6 +11,35 @@ Antigravity is a lightweight, asynchronous workflow engine built with Python. It
 - **Modern Stack**: Uses `uv` for fast package management and `FastAPI` for the web interface.
 - **Dockerized**: Ready-to-deploy with Docker and Docker Compose.
 
+## Architecture
+
+The engine executes workflows as Directed Acyclic Graphs (DAGs).
+
+```mermaid
+flowchart TD
+    Start([Start Workflow]) --> Init[Build Graph & Calculate In-Degrees]
+    Init --> FindReady[Find Ready Nodes (In-Degree 0)]
+    FindReady --> CheckQueue{Queue Empty?}
+    
+    CheckQueue -- Yes --> Finish([End Workflow])
+    CheckQueue -- No --> PopNode[Pop Node from Queue]
+    
+    PopNode --> CheckSkip{Is Parent SKIPPED?}
+    CheckSkip -- Yes --> MarkSkip[Mark Node SKIPPED]
+    CheckSkip -- No --> ExecNode[Execute Node]
+    
+    ExecNode --> IsAgent{Is Agent Node?}
+    IsAgent -- Yes --> CallLLM[Call LLM to Select Path]
+    CallLLM --> MarkUnselected[Mark Unselected Paths SKIPPED]
+    IsAgent -- No --> StoreResult[Store Result]
+    
+    MarkSkip --> UpdateChildren[Update Children In-Degrees]
+    StoreResult --> UpdateChildren
+    MarkUnselected --> UpdateChildren
+    
+    UpdateChildren --> FindReady
+```
+
 ## Project Structure
 
 ```
